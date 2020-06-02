@@ -37,7 +37,7 @@ func ConnectDB(dbName string, collectionName string) *mgo.Session {
 	dbSecret := GetEnv("CATALOG_DB_PASSWORD", "Vmware2020!")
 
 	// Get ENV variable or set to default value
-	dbIP := GetEnv("CATALOG_DB_HOST", "catalog-mongo.acme.svc.cluste.local")
+	dbIP := GetEnv("CATALOG_DB_HOST", "catalog-mongo.acme.svc.cluster.local")
 	dbPort := GetEnv("CATALOG_DB_PORT", "27017")
 
 	mongoDBUrl := fmt.Sprintf("mongodb://%s:%s@%s:%s/?authSource=admin", dbUsername, dbSecret, dbIP, dbPort)
