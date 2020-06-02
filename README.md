@@ -228,7 +228,7 @@ curl --request GET \
 
 ## Contributing
 
-[Pull requests](https://github.com/vmwarecloudadvocacy/catalogsvc/pulls) are welcome. For major changes, please open [an issue](https://github.com/vmwarecloudadvocacy/catalogsvc/issues) first to discuss what you would like to change.
+[Pull requests](https://github.com/sivarajp/catalogsvc/pulls) are welcome. For major changes, please open [an issue](https://github.com/sivarajp/catalogsvc/issues) first to discuss what you would like to change.
 
 Please make sure to update tests as appropriate.
 

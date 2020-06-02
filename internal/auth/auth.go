@@ -8,8 +8,8 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
-	"github.com/vmwarecloudadvocacy/catalogsvc/internal/db"
-	"github.com/vmwarecloudadvocacy/catalogsvc/pkg/logger"
+	"github.com/sivarajp/catalogsvc/internal/db"
+	"github.com/sivarajp/catalogsvc/pkg/logger"
 )
 
 var (

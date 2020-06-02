@@ -1,4 +1,4 @@
-module github.com/vmwarecloudadvocacy/catalogsvc
+module github.com/sivarajp/catalogsvc
 
 go 1.12
 

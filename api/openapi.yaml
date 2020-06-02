@@ -3,13 +3,13 @@ info:
   title: Catalog
   version: v0.1.0
   description: |
-    This is the REST API documentation for the [Catalog](https://github.com/vmwarecloudadvocacy/catalogsvc) Service app of the [ACME Fitness Shop](https://github.com/vmwarecloudadvocacy/acme_fitness_demo).
+    This is the REST API documentation for the [Catalog](https://github.com/sivarajp/catalogsvc) Service app of the [ACME Fitness Shop](https://github.com/vmwarecloudadvocacy/acme_fitness_demo).
   contact:
     name: VMware Cloud Advocacy team
-    url: 'https://github.com/vmwarecloudadvocacy'
+    url: 'https://github.com/sivarajp'
   license:
     name: MIT
-    url: 'https://github.com/vmwarecloudadvocacy/catalogsvc/blob/master/LICENSE'
+    url: 'https://github.com/sivarajp/catalogsvc/blob/master/LICENSE'
 servers:
   - url: 'http://localhost:8082'
 paths:

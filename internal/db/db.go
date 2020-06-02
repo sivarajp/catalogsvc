@@ -5,7 +5,7 @@ import (
 	"os"
 
 	"github.com/globalsign/mgo"
-	"github.com/vmwarecloudadvocacy/catalogsvc/pkg/logger"
+	"github.com/sivarajp/catalogsvc/pkg/logger"
 )
 
 var (

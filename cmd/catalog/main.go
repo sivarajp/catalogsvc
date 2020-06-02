@@ -11,10 +11,10 @@ import (
 	jaeger "github.com/uber/jaeger-client-go"
 	"github.com/uber/jaeger-client-go/config"
 	jaegercfg "github.com/uber/jaeger-client-go/config"
-	"github.com/vmwarecloudadvocacy/catalogsvc/internal/auth"
-	"github.com/vmwarecloudadvocacy/catalogsvc/internal/db"
-	"github.com/vmwarecloudadvocacy/catalogsvc/internal/service"
-	"github.com/vmwarecloudadvocacy/catalogsvc/pkg/logger"
+	"github.com/sivarajp/catalogsvc/internal/auth"
+	"github.com/sivarajp/catalogsvc/internal/db"
+	"github.com/sivarajp/catalogsvc/internal/service"
+	"github.com/sivarajp/catalogsvc/pkg/logger"
 )
 
 const (

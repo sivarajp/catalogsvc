@@ -8,8 +8,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/globalsign/mgo/bson"
 	stdopentracing "github.com/opentracing/opentracing-go"
-	"github.com/vmwarecloudadvocacy/catalogsvc/internal/db"
-	"github.com/vmwarecloudadvocacy/catalogsvc/pkg/logger"
+	"github.com/sivarajp/catalogsvc/internal/db"
+	"github.com/sivarajp/catalogsvc/pkg/logger"
 )
 
 // Product struct
