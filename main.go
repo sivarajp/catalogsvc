@@ -76,8 +76,8 @@ func handleRequest() {
 	}
 
 	// Set default values if ENV variables are not set
-	port := db.GetEnv("CATALOG_SERVICE_PORT", "8082")
-	ip := db.GetEnv("CATALOG_HOST", "0.0.0.0")
+	port := "8082"
+	ip := "0.0.0.0"
 
 	ipPort := ip + ":" + port
 
