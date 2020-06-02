@@ -41,10 +41,11 @@ func ConnectDB(dbName string, collectionName string) *mgo.Session {
 	dbPort := GetEnv("CATALOG_DB_PORT", "27017")
 
 	mongoDBUrl := fmt.Sprintf("mongodb://%s:%s@%s:%s/?authSource=admin", dbUsername, dbSecret, dbIP, dbPort)
-
+	logger.Logger.Info(mongoDBUrl)
 	Session, error := mgo.DialWithTimeout(mongoDBUrl, time.Duration(15 * time.Second))
 
 	if error != nil {
+		logger.Logger.Errorf("Mongo timeout %s", mongoDBUrl)
 		fmt.Printf(error.Error())
 		logger.Logger.Fatalf(error.Error())
 		os.Exit(1)
