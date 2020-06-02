@@ -3,6 +3,7 @@ package db
 import (
 	"fmt"
 	"os"
+	"time"
 
 	"github.com/globalsign/mgo"
 	"github.com/sivarajp/catalogsvc/pkg/logger"
@@ -32,16 +33,16 @@ func GetEnv(key, fallback string) string {
 // ConnectDB accepts name of database and collection as a string
 func ConnectDB(dbName string, collectionName string) *mgo.Session {
 
-	dbUsername := os.Getenv("CATALOG_DB_USERNAME")
-	dbSecret := os.Getenv("CATALOG_DB_PASSWORD")
+	dbUsername := GetEnv("CATALOG_DB_USERNAME", "mongoadmin")
+	dbSecret := GetEnv("CATALOG_DB_PASSWORD", "Vmware2020!")
 
 	// Get ENV variable or set to default value
-	dbIP := GetEnv("CATALOG_DB_HOST", "0.0.0.0")
+	dbIP := GetEnv("CATALOG_DB_HOST", "catalog-mongo.acme.svc.cluste.local")
 	dbPort := GetEnv("CATALOG_DB_PORT", "27017")
 
 	mongoDBUrl := fmt.Sprintf("mongodb://%s:%s@%s:%s/?authSource=admin", dbUsername, dbSecret, dbIP, dbPort)
 
-	Session, error := mgo.Dial(mongoDBUrl)
+	Session, error := mgo.DialWithTimeout(mongoDBUrl, time.Duration(15 * time.Second))
 
 	if error != nil {
 		fmt.Printf(error.Error())
