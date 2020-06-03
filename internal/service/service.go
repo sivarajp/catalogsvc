@@ -26,10 +26,13 @@ var tags = map[string]string{
 }
 
 func incRequests() int64 {
+	logger.Logger.Info("Incrementing count")
 	return atomic.AddInt64(&requests, 1)
+
 }
 
 func (p ProductService) InitMetrics() {
+	logger.Logger.Info("inside int products")
 	p.Reporter.RegisterMetric("product", productCounter, tags)
 }
 
