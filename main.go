@@ -4,17 +4,21 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"sync/atomic"
 
 	"github.com/gin-gonic/gin"
 	opentracing "github.com/opentracing/opentracing-go"
 	stdopentracing "github.com/opentracing/opentracing-go"
-	jaeger "github.com/uber/jaeger-client-go"
-	"github.com/uber/jaeger-client-go/config"
-	jaegercfg "github.com/uber/jaeger-client-go/config"
+	"github.com/rcrowley/go-metrics"
 	"github.com/sivarajp/catalogsvc/internal/auth"
 	"github.com/sivarajp/catalogsvc/internal/db"
 	"github.com/sivarajp/catalogsvc/internal/service"
+	"github.com/sivarajp/catalogsvc/internal/wavefront"
 	"github.com/sivarajp/catalogsvc/pkg/logger"
+	jaeger "github.com/uber/jaeger-client-go"
+	"github.com/uber/jaeger-client-go/config"
+	jaegercfg "github.com/uber/jaeger-client-go/config"
+	"github.com/wavefronthq/go-metrics-wavefront/reporting"
 )
 
 const (
@@ -52,10 +56,28 @@ func initJaeger(service string) (opentracing.Tracer, io.Closer) {
 	return tracer, closer
 }
 
+var requests int64 = 0
+var productCounter = metrics.NewCounter()
+var tags = map[string]string{
+	"sivaraj": "pasumalaithevan",
+}
+
+func incRequests() int64 {
+	return atomic.AddInt64(&requests, 1)
+}
+
+func ProductHandler(reporter reporting.WavefrontMetricsReporter) gin.HandlerFunc {
+	productCounter.Inc(incRequests())
+	return gin.HandlerFunc(service.GetProduct)
+}
+
 // This handles initiation of "gin" router. It also defines routes to various APIs
 // Env variable CATALOG_IP and CATALOG_PORT should be used to set IP and PORT.
 // For example: export CATALOG_PORT=8087 will start the server on local IP at 0.0.0.0:8087
 func handleRequest() {
+
+	reporter := wavefront.InitWavefront()
+	reporter.RegisterMetric("product", productCounter, tags)
 
 	router := gin.Default()
 
@@ -65,7 +87,7 @@ func handleRequest() {
 	{
 		nonAuthGroup.GET("/liveness", service.GetLiveness)
 		nonAuthGroup.GET("/products", service.GetProducts)
-		nonAuthGroup.GET("/products/:id", service.GetProduct)
+		nonAuthGroup.GET("/products/:id", ProductHandler(reporter))
 	}
 
 	authGroup := router.Group("/")
@@ -114,4 +136,22 @@ func main() {
 
 	// defer to close
 	defer f.Close()
+}
+
+func createDurationMetric(product string) metrics.Timer {
+	t := metrics.NewTimer()
+	reporting.RegisterMetric(
+		"request.duration", t, map[string]string{
+			"product": product,
+		})
+	return t
+}
+
+func createCounterErrorMetric(product string) metrics.Counter {
+	c := metrics.NewCounter()
+	reporting.RegisterMetric(
+		"error", c, map[string]string{
+			"product": product,
+		})
+	return c
 }
