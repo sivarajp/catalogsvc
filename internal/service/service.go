@@ -2,7 +2,6 @@ package service
 
 import (
 	"net/http"
-	"sync/atomic"
 
 	tracelog "github.com/opentracing/opentracing-go/log"
 	"github.com/rcrowley/go-metrics"
@@ -19,16 +18,9 @@ type ProductService struct {
 	Reporter reporting.WavefrontMetricsReporter
 }
 
-var requests int64 = 0
 var productCounter = metrics.NewCounter()
 var tags = map[string]string{
 	"sivaraj": "pasumalaithevan",
-}
-
-func incRequests() int64 {
-	logger.Logger.Infof("Incrementing count %d", requests)
-	return atomic.AddInt64(&requests, 1)
-
 }
 
 func (p ProductService) InitMetrics() {
@@ -99,7 +91,7 @@ func (p ProductService) GetProducts(c *gin.Context) {
 // GetProduct accepts a context as input along with a specific product ID and returns details about that product
 // If a product is not found, it returns 404 NOT FOUND
 func (p ProductService) GetProduct(c *gin.Context) {
-	productCounter.Inc(incRequests())
+	productCounter.Inc(1)
 	var product Product
 	tracer := stdopentracing.GlobalTracer()
 

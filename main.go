@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"io"
 	"os"
-	"sync/atomic"
 
 	"github.com/gin-gonic/gin"
 	opentracing "github.com/opentracing/opentracing-go"
@@ -52,12 +51,6 @@ func initJaeger(service string) (opentracing.Tracer, io.Closer) {
 		panic(fmt.Sprintf("ERROR: cannot init Jaeger: %v\n", err))
 	}
 	return tracer, closer
-}
-
-var requests int64 = 0
-
-func incRequests() int64 {
-	return atomic.AddInt64(&requests, 1)
 }
 
 // This handles initiation of "gin" router. It also defines routes to various APIs
