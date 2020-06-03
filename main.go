@@ -67,6 +67,7 @@ func incRequests() int64 {
 }
 
 func ProductHandler(reporter reporting.WavefrontMetricsReporter) gin.HandlerFunc {
+	logger.Logger.Infof("Counter", requests)
 	productCounter.Inc(incRequests())
 	return gin.HandlerFunc(service.GetProduct)
 }
