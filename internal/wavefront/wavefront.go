@@ -24,9 +24,9 @@ func InitWavefront() reporting.WavefrontMetricsReporter {
 
 	reporter := reporting.NewReporter(
 		sender,
-		application.New("siva-demo-app", "test-service"),
-		reporting.Source("go-metrics-test"),
-		reporting.Prefix("siva.prefix"),
+		application.New("siva-demo-app", "catalog-service"),
+		reporting.Source("siva-dev"),
+		reporting.Prefix("siva.acme"),
 		reporting.LogErrors(true),
 		reporting.RuntimeMetric(true),
 	)

@@ -9,7 +9,6 @@ import (
 	"github.com/gin-gonic/gin"
 	opentracing "github.com/opentracing/opentracing-go"
 	stdopentracing "github.com/opentracing/opentracing-go"
-	"github.com/rcrowley/go-metrics"
 	"github.com/sivarajp/catalogsvc/internal/auth"
 	"github.com/sivarajp/catalogsvc/internal/db"
 	"github.com/sivarajp/catalogsvc/internal/service"
@@ -18,7 +17,6 @@ import (
 	jaeger "github.com/uber/jaeger-client-go"
 	"github.com/uber/jaeger-client-go/config"
 	jaegercfg "github.com/uber/jaeger-client-go/config"
-	"github.com/wavefronthq/go-metrics-wavefront/reporting"
 )
 
 const (
@@ -133,20 +131,20 @@ func main() {
 	defer f.Close()
 }
 
-func createDurationMetric(product string) metrics.Timer {
-	t := metrics.NewTimer()
-	reporting.RegisterMetric(
-		"request.duration", t, map[string]string{
-			"product": product,
-		})
-	return t
-}
+// func createDurationMetric(product string) metrics.Timer {
+// 	t := metrics.NewTimer()
+// 	reporting.RegisterMetric(
+// 		"request.duration", t, map[string]string{
+// 			"product": product,
+// 		})
+// 	return t
+// }
 
-func createCounterErrorMetric(product string) metrics.Counter {
-	c := metrics.NewCounter()
-	reporting.RegisterMetric(
-		"error", c, map[string]string{
-			"product": product,
-		})
-	return c
-}
+// func createCounterErrorMetric(product string) metrics.Counter {
+// 	c := metrics.NewCounter()
+// 	reporting.RegisterMetric(
+// 		"error", c, map[string]string{
+// 			"product": product,
+// 		})
+// 	return c
+// }

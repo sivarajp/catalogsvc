@@ -26,7 +26,7 @@ var tags = map[string]string{
 }
 
 func incRequests() int64 {
-	logger.Logger.Info("Incrementing count")
+	logger.Logger.Infof("Incrementing count %d", requests)
 	return atomic.AddInt64(&requests, 1)
 
 }
