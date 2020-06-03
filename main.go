@@ -57,19 +57,9 @@ func initJaeger(service string) (opentracing.Tracer, io.Closer) {
 }
 
 var requests int64 = 0
-var productCounter = metrics.NewCounter()
-var tags = map[string]string{
-	"sivaraj": "pasumalaithevan",
-}
 
 func incRequests() int64 {
 	return atomic.AddInt64(&requests, 1)
-}
-
-func ProductHandler(reporter reporting.WavefrontMetricsReporter) gin.HandlerFunc {
-	logger.Logger.Infof("Counter", requests)
-	productCounter.Inc(incRequests())
-	return gin.HandlerFunc(service.GetProduct)
 }
 
 // This handles initiation of "gin" router. It also defines routes to various APIs
@@ -78,24 +68,28 @@ func ProductHandler(reporter reporting.WavefrontMetricsReporter) gin.HandlerFunc
 func handleRequest() {
 
 	reporter := wavefront.InitWavefront()
-	reporter.RegisterMetric("product", productCounter, tags)
 
 	router := gin.Default()
 
 	router.Static("/static/images", "./web")
 
+	ps := service.ProductService{
+		Reporter: reporter,
+	}
+	ps.InitMetrics()
+
 	nonAuthGroup := router.Group("/")
 	{
-		nonAuthGroup.GET("/liveness", service.GetLiveness)
-		nonAuthGroup.GET("/products", service.GetProducts)
-		nonAuthGroup.GET("/products/:id", ProductHandler(reporter))
+		nonAuthGroup.GET("/liveness", ps.GetLiveness)
+		nonAuthGroup.GET("/products", ps.GetProducts)
+		nonAuthGroup.GET("/products/:id", ps.GetProduct)
 	}
 
 	authGroup := router.Group("/")
 
 	authGroup.Use(auth.AuthMiddleware())
 	{
-		authGroup.POST("/products", service.CreateProduct)
+		authGroup.POST("/products", ps.CreateProduct)
 	}
 
 	// Set default values if ENV variables are not set

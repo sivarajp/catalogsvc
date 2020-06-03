@@ -2,8 +2,11 @@ package service
 
 import (
 	"net/http"
+	"sync/atomic"
 
 	tracelog "github.com/opentracing/opentracing-go/log"
+	"github.com/rcrowley/go-metrics"
+	"github.com/wavefronthq/go-metrics-wavefront/reporting"
 
 	"github.com/gin-gonic/gin"
 	"github.com/globalsign/mgo/bson"
@@ -11,6 +14,24 @@ import (
 	"github.com/sivarajp/catalogsvc/internal/db"
 	"github.com/sivarajp/catalogsvc/pkg/logger"
 )
+
+type ProductService struct {
+	Reporter reporting.WavefrontMetricsReporter
+}
+
+var requests int64 = 0
+var productCounter = metrics.NewCounter()
+var tags = map[string]string{
+	"sivaraj": "pasumalaithevan",
+}
+
+func incRequests() int64 {
+	return atomic.AddInt64(&requests, 1)
+}
+
+func (p ProductService) InitMetrics() {
+	p.Reporter.RegisterMetric("product", productCounter, tags)
+}
 
 // Product struct
 type Product struct {
@@ -32,7 +53,7 @@ type Liveness struct {
 }
 
 // GetLiveness returns a JSON object with information about the service
-func GetLiveness(c *gin.Context) {
+func (p ProductService) GetLiveness(c *gin.Context) {
 	version := db.GetEnv("CATALOG_VERSION", "v1")
 
 	liveness := Liveness{
@@ -44,7 +65,7 @@ func GetLiveness(c *gin.Context) {
 }
 
 // GetProducts accepts context as input and returns JSON with all the products
-func GetProducts(c *gin.Context) {
+func (p ProductService) GetProducts(c *gin.Context) {
 	var products []Product
 
 	tracer := stdopentracing.GlobalTracer()
@@ -74,9 +95,9 @@ func GetProducts(c *gin.Context) {
 
 // GetProduct accepts a context as input along with a specific product ID and returns details about that product
 // If a product is not found, it returns 404 NOT FOUND
-func GetProduct(c *gin.Context) {
+func (p ProductService) GetProduct(c *gin.Context) {
+	productCounter.Inc(incRequests())
 	var product Product
-
 	tracer := stdopentracing.GlobalTracer()
 
 	productSpanCtx, _ := tracer.Extract(stdopentracing.HTTPHeaders, stdopentracing.HTTPHeadersCarrier(c.Request.Header))
@@ -123,7 +144,7 @@ func GetProduct(c *gin.Context) {
 }
 
 // CreateProduct adds a new product item to the database
-func CreateProduct(c *gin.Context) {
+func (p ProductService) CreateProduct(c *gin.Context) {
 	var product Product
 
 	error := c.ShouldBindJSON(&product)
