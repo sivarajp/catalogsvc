@@ -38,10 +38,10 @@ func InitWavefront() reporting.WavefrontMetricsReporter {
 	return reporter
 }
 
-func WavefrontEmitter(reporter reporting.WavefrontMetricsReporter) (gin.HandlerFunc, error) {
+func WavefrontEmitter(reporter reporting.WavefrontMetricsReporter) gin.HandlerFunc {
 
 	return func(c *gin.Context) {
-
+		logger.Logger.Infof("Inside middleware")
 		//pointTags := make(map[string]string)
 		// Start timer
 		start := time.Now()
@@ -90,6 +90,6 @@ func WavefrontEmitter(reporter reporting.WavefrontMetricsReporter) (gin.HandlerF
 		// case statusCode > 499 && statusCode < 600:
 		// 	sender.SendDeltaCounter(strings.Join([]string{w.MetricPrefix, ".status.error.server"}, ""), 1, w.Source, w.PointTags)
 		// }
-	}, nil
+	}
 
 }

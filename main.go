@@ -61,7 +61,7 @@ func handleRequest() {
 	reporter := wavefront.InitWavefront()
 
 	router := gin.Default()
-
+	router.Use(wavefront.WavefrontEmitter(reporter))
 	router.Static("/static/images", "./web")
 
 	ps := service.ProductService{
