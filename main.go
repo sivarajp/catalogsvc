@@ -91,7 +91,7 @@ func handleRequest() {
 
 	logger.Logger.Infof("Starting catalog service at %s on %s", ip, port)
 
-	logger.Logger.Infof("Checking if picking up new change")
+	logger.Logger.Infof("Checking if picking up new change sivaaaa")
 
 	router.Run(ipPort)
 }
