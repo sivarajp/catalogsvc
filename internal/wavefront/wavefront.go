@@ -42,7 +42,7 @@ func WavefrontEmitter(reporter reporting.WavefrontMetricsReporter) gin.HandlerFu
 
 	return func(c *gin.Context) {
 		logger.Logger.Infof("Inside middleware")
-		//pointTags := make(map[string]string)
+		pointTags := make(map[string]string)
 		// Start timer
 		start := time.Now()
 
@@ -52,21 +52,18 @@ func WavefrontEmitter(reporter reporting.WavefrontMetricsReporter) gin.HandlerFu
 		// Stop timer
 		end := time.Now()
 
-		logger.Logger.Infof("Time difference between callas %d", end.Sub(start))
+		logger.Logger.Infof("Time difference between calls%d", end.Sub(start).Milliseconds)
 		// latency := end.Sub(start)
 		// statusCode := c.Writer.Status()
 		// bytesOut := c.Writer.Size()
 		// bytesIn := c.Request.ContentLength
 
-		// Add tags
-		// pointTags["path"] = c.Request.URL.Path
-		// pointTags["clientIP"] = c.ClientIP()
-		// pointTags["method"] = c.Request.Method
-		// pointTags["userAgent"] = c.Request.UserAgent()
+		pointTags["path"] = c.Request.URL.Path
+		pointTags["clientIP"] = c.ClientIP()
+		pointTags["method"] = c.Request.Method
+		pointTags["userAgent"] = c.Request.UserAgent()
 
-		// getCounter := metrics.NewCounter()
-		// createCounter := metrics.NewCounter()
-
+		logger.Logger.Infof("tags", pointTags)
 		// c := reporter.GetMetric(name, tags)
 		// if c == nil {
 		// 	c = metrics.NewCounter()
