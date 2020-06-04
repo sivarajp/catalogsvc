@@ -93,7 +93,7 @@ func WavefrontEmitter(reporter reporting.WavefrontMetricsReporter) gin.HandlerFu
 			}
 		}
 		c.(metrics.Counter).Inc(1)
-		fmt.Println(apiType)
+		fmt.Println(apiType, statusCode)
 		// reporter.GetOrRegisterMetric("m1", getCounter, map[string]string{"tag1": "tag"})
 		// reporter.GetOrRegisterMetric("m2", createCounter, map[string]string{"application": "tag"})
 
