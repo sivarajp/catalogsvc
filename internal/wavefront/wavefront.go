@@ -33,3 +33,44 @@ func InitWavefront() reporting.WavefrontMetricsReporter {
 
 	return reporter
 }
+
+// func WavefrontEmitter(reporter reporting.WavefrontMetricsReporter) (gin.HandlerFunc, error) {
+// 	return func(c *gin.Context) {
+// 		pointTags := make(map[string]string)
+// 		// Start timer
+// 		start := time.Now()
+
+// 		// Process request
+// 		c.Next()
+
+// 		// Stop timer
+// 		end := time.Now()
+// 		latency := end.Sub(start)
+// 		statusCode := c.Writer.Status()
+// 		bytesOut := c.Writer.Size()
+// 		bytesIn := c.Request.ContentLength
+
+// 		// Add tags
+// 		pointTags["path"] = c.Request.URL.Path
+// 		pointTags["clientIP"] = c.ClientIP()
+// 		pointTags["method"] = c.Request.Method
+// 		pointTags["userAgent"] = c.Request.UserAgent()
+
+// 		// Send metrics
+// 		// <metricName> <metricValue> [<timestamp>] source=<source> [pointTags]
+// 		reporter.Report(strings.Join([]string{w.MetricPrefix, ".latency"}, ""), float64(latency.Milliseconds()), end.Unix(), w.Source, w.PointTags)
+// 		sender.SendMetric(strings.Join([]string{w.MetricPrefix, ".bytes.in"}, ""), float64(bytesIn), end.Unix(), w.Source, w.PointTags)
+// 		sender.SendMetric(strings.Join([]string{w.MetricPrefix, ".bytes.out"}, ""), float64(bytesOut), end.Unix(), w.Source, w.PointTags)
+// 		switch {
+// 		case statusCode > 199 && statusCode < 300:
+// 			sender.SendDeltaCounter(strings.Join([]string{w.MetricPrefix, ".status.success"}, ""), 1, w.Source, w.PointTags)
+// 		case statusCode > 299 && statusCode < 400:
+// 			sender.SendDeltaCounter(strings.Join([]string{w.MetricPrefix, ".status.redirection"}, ""), 1, w.Source, w.PointTags)
+// 		case statusCode > 399 && statusCode < 500:
+// 			sender.SendDeltaCounter(strings.Join([]string{w.MetricPrefix, ".status.error.client"}, ""), 1, w.Source, w.PointTags)
+// 		case statusCode > 499 && statusCode < 600:
+// 			sender.SendDeltaCounter(strings.Join([]string{w.MetricPrefix, ".status.error.server"}, ""), 1, w.Source, w.PointTags)
+// 		}
+// 	}, nil
+
+// }
