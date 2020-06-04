@@ -1,6 +1,10 @@
 package wavefront
 
 import (
+	"time"
+
+	"github.com/gin-gonic/gin"
+	"github.com/sivarajp/catalogsvc/pkg/logger"
 	"github.com/wavefronthq/go-metrics-wavefront/reporting"
 	"github.com/wavefronthq/wavefront-sdk-go/application"
 	"github.com/wavefronthq/wavefront-sdk-go/senders"
@@ -14,7 +18,7 @@ func InitWavefront() reporting.WavefrontMetricsReporter {
 		Token:                "400a1c6d-247f-46c9-acd7-53306b58525f",
 		BatchSize:            10000,
 		MaxBufferSize:        50000,
-		FlushIntervalSeconds: 1,
+		FlushIntervalSeconds: 5,
 	}
 
 	sender, err := senders.NewDirectSender(directCfg)
@@ -34,43 +38,58 @@ func InitWavefront() reporting.WavefrontMetricsReporter {
 	return reporter
 }
 
-// func WavefrontEmitter(reporter reporting.WavefrontMetricsReporter) (gin.HandlerFunc, error) {
-// 	return func(c *gin.Context) {
-// 		pointTags := make(map[string]string)
-// 		// Start timer
-// 		start := time.Now()
+func WavefrontEmitter(reporter reporting.WavefrontMetricsReporter) (gin.HandlerFunc, error) {
 
-// 		// Process request
-// 		c.Next()
+	return func(c *gin.Context) {
 
-// 		// Stop timer
-// 		end := time.Now()
-// 		latency := end.Sub(start)
-// 		statusCode := c.Writer.Status()
-// 		bytesOut := c.Writer.Size()
-// 		bytesIn := c.Request.ContentLength
+		//pointTags := make(map[string]string)
+		// Start timer
+		start := time.Now()
 
-// 		// Add tags
-// 		pointTags["path"] = c.Request.URL.Path
-// 		pointTags["clientIP"] = c.ClientIP()
-// 		pointTags["method"] = c.Request.Method
-// 		pointTags["userAgent"] = c.Request.UserAgent()
+		// Process request
+		c.Next()
 
-// 		// Send metrics
-// 		// <metricName> <metricValue> [<timestamp>] source=<source> [pointTags]
-// 		reporter.Report(strings.Join([]string{w.MetricPrefix, ".latency"}, ""), float64(latency.Milliseconds()), end.Unix(), w.Source, w.PointTags)
-// 		sender.SendMetric(strings.Join([]string{w.MetricPrefix, ".bytes.in"}, ""), float64(bytesIn), end.Unix(), w.Source, w.PointTags)
-// 		sender.SendMetric(strings.Join([]string{w.MetricPrefix, ".bytes.out"}, ""), float64(bytesOut), end.Unix(), w.Source, w.PointTags)
-// 		switch {
-// 		case statusCode > 199 && statusCode < 300:
-// 			sender.SendDeltaCounter(strings.Join([]string{w.MetricPrefix, ".status.success"}, ""), 1, w.Source, w.PointTags)
-// 		case statusCode > 299 && statusCode < 400:
-// 			sender.SendDeltaCounter(strings.Join([]string{w.MetricPrefix, ".status.redirection"}, ""), 1, w.Source, w.PointTags)
-// 		case statusCode > 399 && statusCode < 500:
-// 			sender.SendDeltaCounter(strings.Join([]string{w.MetricPrefix, ".status.error.client"}, ""), 1, w.Source, w.PointTags)
-// 		case statusCode > 499 && statusCode < 600:
-// 			sender.SendDeltaCounter(strings.Join([]string{w.MetricPrefix, ".status.error.server"}, ""), 1, w.Source, w.PointTags)
-// 		}
-// 	}, nil
+		// Stop timer
+		end := time.Now()
 
-// }
+		logger.Logger.Infof("Time difference between callas %d", end.Sub(start))
+		// latency := end.Sub(start)
+		// statusCode := c.Writer.Status()
+		// bytesOut := c.Writer.Size()
+		// bytesIn := c.Request.ContentLength
+
+		// Add tags
+		// pointTags["path"] = c.Request.URL.Path
+		// pointTags["clientIP"] = c.ClientIP()
+		// pointTags["method"] = c.Request.Method
+		// pointTags["userAgent"] = c.Request.UserAgent()
+
+		// getCounter := metrics.NewCounter()
+		// createCounter := metrics.NewCounter()
+
+		// c := reporter.GetMetric(name, tags)
+		// if c == nil {
+		// 	c = metrics.NewCounter()
+		// 	reporter.RegisterMetric(name, c, tags)
+		// }
+
+		// reporter.GetOrRegisterMetric("m1", getCounter, map[string]string{"tag1": "tag"})
+		// reporter.GetOrRegisterMetric("m2", createCounter, map[string]string{"application": "tag"})
+
+		// // Send metrics
+		// // <metricName> <metricValue> [<timestamp>] source=<source> [pointTags]
+		// reporter.Report(strings.Join([]string{w.MetricPrefix, ".latency"}, ""), float64(latency.Milliseconds()), end.Unix(), w.Source, w.PointTags)
+		// sender.SendMetric(strings.Join([]string{w.MetricPrefix, ".bytes.out"}, ""), float64(bytesOut), end.Unix(), w.Source, w.PointTags)
+		// switch {
+		// case statusCode > 199 && statusCode < 300:
+		// 	sender.SendDeltaCounter(strings.Join([]string{w.MetricPrefix, ".status.success"}, ""), 1, w.Source, w.PointTags)
+		// case statusCode > 299 && statusCode < 400:
+		// 	sender.SendDeltaCounter(strings.Join([]string{w.MetricPrefix, ".status.redirection"}, ""), 1, w.Source, w.PointTags)
+		// case statusCode > 399 && statusCode < 500:
+		// 	sender.SendDeltaCounter(strings.Join([]string{w.MetricPrefix, ".status.error.client"}, ""), 1, w.Source, w.PointTags)
+		// case statusCode > 499 && statusCode < 600:
+		// 	sender.SendDeltaCounter(strings.Join([]string{w.MetricPrefix, ".status.error.server"}, ""), 1, w.Source, w.PointTags)
+		// }
+	}, nil
+
+}

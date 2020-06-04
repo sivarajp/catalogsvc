@@ -112,6 +112,8 @@ func main() {
 
 	logger.Logger.Infof("Successfully connected to database %s", dbName)
 
+	logger.Logger.Infof("New changes are in")
+
 	tracer, closer := initJaeger("catalog")
 
 	stdopentracing.SetGlobalTracer(tracer)
