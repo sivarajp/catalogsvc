@@ -1,9 +1,11 @@
 package wavefront
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/rcrowley/go-metrics"
 	"github.com/sivarajp/catalogsvc/pkg/logger"
 	"github.com/wavefronthq/go-metrics-wavefront/reporting"
 	"github.com/wavefronthq/wavefront-sdk-go/application"
@@ -40,42 +42,65 @@ func InitWavefront() reporting.WavefrontMetricsReporter {
 
 func WavefrontEmitter(reporter reporting.WavefrontMetricsReporter) gin.HandlerFunc {
 
-	return func(c *gin.Context) {
+	return func(g *gin.Context) {
 		logger.Logger.Infof("Inside middleware")
 		pointTags := make(map[string]string)
 		// Start timer
 		start := time.Now()
 
 		// Process request
-		c.Next()
+		g.Next()
 
 		// Stop timer
 		end := time.Now()
 
 		logger.Logger.Infof("Time difference between calls%d", end.Sub(start).Milliseconds)
 		// latency := end.Sub(start)
-		// statusCode := c.Writer.Status()
+		statusCode := g.Writer.Status()
 		// bytesOut := c.Writer.Size()
 		// bytesIn := c.Request.ContentLength
 
-		pointTags["path"] = c.Request.URL.Path
-		pointTags["clientIP"] = c.ClientIP()
-		pointTags["method"] = c.Request.Method
-		pointTags["userAgent"] = c.Request.UserAgent()
+		pointTags["path"] = g.Request.URL.Path
+		pointTags["clientIP"] = g.ClientIP()
+		pointTags["method"] = g.Request.Method
+		pointTags["userAgent"] = g.Request.UserAgent()
 
 		logger.Logger.Infof("tags", pointTags)
-		// c := reporter.GetMetric(name, tags)
-		// if c == nil {
-		// 	c = metrics.NewCounter()
-		// 	reporter.RegisterMetric(name, c, tags)
-		// }
-
+		var c interface{}
+		var apiType string
+		if g.Request.Method == "GET" {
+			if g.Request.URL.Path == "/products" {
+				apiType := "ListProduct"
+				c = reporter.GetMetric(apiType, pointTags)
+				if c == nil {
+					c = metrics.NewCounter()
+					reporter.RegisterMetric(apiType, c, pointTags)
+				}
+			} else {
+				apiType := "GetProduct"
+				c = reporter.GetMetric(apiType, pointTags)
+				if c == nil {
+					c = metrics.NewCounter()
+					reporter.RegisterMetric(apiType, c, pointTags)
+				}
+			}
+		} else if g.Request.Method == "POST" {
+			apiType := "CreateProduct"
+			c = reporter.GetMetric(apiType, pointTags)
+			if c == nil {
+				c = metrics.NewCounter()
+				reporter.RegisterMetric(apiType, c, pointTags)
+			}
+		}
+		c.(metrics.Counter).Inc(1)
+		fmt.Println(apiType)
 		// reporter.GetOrRegisterMetric("m1", getCounter, map[string]string{"tag1": "tag"})
 		// reporter.GetOrRegisterMetric("m2", createCounter, map[string]string{"application": "tag"})
 
 		// // Send metrics
 		// // <metricName> <metricValue> [<timestamp>] source=<source> [pointTags]
-		// reporter.Report(strings.Join([]string{w.MetricPrefix, ".latency"}, ""), float64(latency.Milliseconds()), end.Unix(), w.Source, w.PointTags)
+		// sender.SendMetric(strings.Join([]string{w.MetricPrefix, ".latency"}, ""), float64(latency.Milliseconds()), end.Unix(), w.Source, w.PointTags)
+		// sender.SendMetric(strings.Join([]string{w.MetricPrefix, ".bytes.in"}, ""), float64(bytesIn), end.Unix(), w.Source, w.PointTags)
 		// sender.SendMetric(strings.Join([]string{w.MetricPrefix, ".bytes.out"}, ""), float64(bytesOut), end.Unix(), w.Source, w.PointTags)
 		// switch {
 		// case statusCode > 199 && statusCode < 300:
