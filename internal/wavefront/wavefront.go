@@ -2,6 +2,7 @@ package wavefront
 
 import (
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -60,7 +61,6 @@ func WavefrontEmitter(reporter reporting.WavefrontMetricsReporter) gin.HandlerFu
 		// bytesOut := c.Writer.Size()
 		// bytesIn := c.Request.ContentLength
 
-		pointTags["path"] = g.Request.URL.Path
 		pointTags["clientIP"] = g.ClientIP()
 		pointTags["method"] = g.Request.Method
 		pointTags["userAgent"] = g.Request.UserAgent()
@@ -76,7 +76,7 @@ func WavefrontEmitter(reporter reporting.WavefrontMetricsReporter) gin.HandlerFu
 					c = metrics.NewCounter()
 					reporter.RegisterMetric(apiType, c, pointTags)
 				}
-			} else {
+			} else if !strings.Contains(g.Request.URL.Path, "static") {
 				apiType := "GetProduct"
 				c = reporter.GetMetric(apiType, pointTags)
 				if c == nil {
