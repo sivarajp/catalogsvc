@@ -68,6 +68,7 @@ func WavefrontEmitter(reporter reporting.WavefrontMetricsReporter) gin.HandlerFu
 		logger.Logger.Infof("tags", pointTags)
 		var c interface{}
 		var apiType string
+
 		if g.Request.Method == "GET" {
 			if g.Request.URL.Path == "/products" {
 				apiType := "ListProduct"
@@ -92,7 +93,9 @@ func WavefrontEmitter(reporter reporting.WavefrontMetricsReporter) gin.HandlerFu
 				reporter.RegisterMetric(apiType, c, pointTags)
 			}
 		}
-		c.(metrics.Counter).Inc(1)
+		if c != nil {
+			c.(metrics.Counter).Inc(1)
+		}
 		fmt.Println(apiType, statusCode)
 		// reporter.GetOrRegisterMetric("m1", getCounter, map[string]string{"tag1": "tag"})
 		// reporter.GetOrRegisterMetric("m2", createCounter, map[string]string{"application": "tag"})
